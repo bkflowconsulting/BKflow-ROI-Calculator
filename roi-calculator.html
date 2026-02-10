@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BKFlow ROI Calculator | Lead Generation & Automation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #0a1628;
+            --bg-card: #0f1f3a;
+            --accent-green: #00ff88;
+            --accent-blue: #00d4ff;
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --border-color: rgba(0, 255, 136, 0.2);
+            --gradient-1: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%);
+            --gradient-2: linear-gradient(135deg, rgba(0, 255, 136, 0.1) 0%, rgba(0, 212, 255, 0.1) 100%);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(0, 255, 136, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 212, 255, 0.05) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.03em;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gradient-1);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            background: var(--gradient-1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.3s ease;
+        }
+
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent-green);
+            background: rgba(0, 255, 136, 0.05);
+            box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+        }
+
+        input[type="number"]::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .slider-container {
+            margin-top: 0.5rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--gradient-1);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 255, 136, 0.4);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--gradient-1);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .results-section {
+            animation: fadeInUp 0.6s ease-out 0.4s both;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .result-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-1);
+        }
+
+        .result-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: -0.02em;
+        }
+
+        .result-suffix {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-left: 0.3rem;
+        }
+
+        .comparison-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .comparison-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .comparison-column {
+            padding: 1.5rem;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .comparison-column.before {
+            background: rgba(255, 68, 68, 0.05);
+            border: 1px solid rgba(255, 68, 68, 0.2);
+        }
+
+        .comparison-column.after {
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+        }
+
+        .comparison-column h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .comparison-column.before h3 {
+            color: #ff4444;
+        }
+
+        .comparison-column.after h3 {
+            color: var(--accent-green);
+        }
+
+        .comparison-stat {
+            margin-bottom: 1rem;
+        }
+
+        .comparison-stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.3rem;
+        }
+
+        .comparison-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .roi-highlight {
+            background: var(--gradient-2);
+            border: 2px solid var(--accent-green);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .roi-highlight-label {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .roi-highlight-value {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'JetBrains Mono', monospace;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .roi-highlight-description {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 2rem;
+            animation: fadeInUp 0.6s ease-out 0.6s both;
+        }
+
+        .cta-text {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1.2rem 3rem;
+            background: var(--gradient-1);
+            color: var(--bg-dark);
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(0, 255, 136, 0.5);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .calculator-grid,
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .result-value {
+                font-size: 1.8rem;
+            }
+
+            .roi-highlight-value {
+                font-size: 2.5rem;
+            }
+        }
+
+        .info-tooltip {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 16px;
+            font-size: 0.7rem;
+            cursor: help;
+            margin-left: 0.3rem;
+        }
+
+        .pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">BKFLOW CONSULTING</div>
+            <h1>Lead Generation ROI Calculator</h1>
+            <p class="subtitle">See exactly how much revenue you're leaving on the table—and what our system will add to your bottom line.</p>
+        </div>
+
+        <div class="calculator-grid">
+            <div class="card">
+                <h2 class="card-title">
+                    <span class="icon">📊</span>
+                    Current Situation
+                </h2>
+                
+                <div class="input-group">
+                    <label for="monthlyLeads">Monthly Leads / Inquiries</label>
+                    <input type="number" id="monthlyLeads" value="50" min="0" placeholder="50">
+                </div>
+
+                <div class="input-group">
+                    <label for="missedLeadRate">% of Leads NOT Followed Up With</label>
+                    <input type="number" id="missedLeadRate" value="50" min="0" max="100" step="5" placeholder="50">
+                    <div class="slider-container">
+                        <input type="range" id="missedSlider" value="50" min="0" max="100" step="5">
+                        <div class="slider-labels">
+                            <span>0%</span>
+                            <span>50%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="currentConversion">Close Rate on Contacted Leads (%)</label>
+                    <input type="number" id="currentConversion" value="30" min="0" max="100" step="1" placeholder="30">
+                    <div class="slider-container">
+                        <input type="range" id="conversionSlider" value="30" min="0" max="100" step="1">
+                        <div class="slider-labels">
+                            <span>0%</span>
+                            <span>50%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="avgCustomerValue">Average Customer Value ($)</label>
+                    <input type="number" id="avgCustomerValue" value="2000" min="0" step="100" placeholder="2000">
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">
+                    <span class="icon">🚀</span>
+                    With BKFlow System
+                </h2>
+                
+                <div class="input-group">
+                    <label for="newCapture">Lead Capture Rate (%)</label>
+                    <input type="number" id="newCapture" value="85" min="0" max="100" step="1" placeholder="85">
+                    <div class="slider-container">
+                        <input type="range" id="newCaptureSlider" value="85" min="0" max="100" step="1">
+                        <div class="slider-labels">
+                            <span>0%</span>
+                            <span>50%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="newConversion">Close Rate on Contacted Leads (%)</label>
+                    <input type="number" id="newConversion" value="30" min="0" max="100" step="1" placeholder="30">
+                    <div class="slider-container">
+                        <input type="range" id="newConversionSlider" value="30" min="0" max="100" step="1">
+                        <div class="slider-labels">
+                            <span>0%</span>
+                            <span>50%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="setupCost">One-Time Setup Cost ($)</label>
+                    <input type="number" id="setupCost" value="1000" min="0" step="100" placeholder="1000">
+                </div>
+
+                <div class="input-group">
+                    <label for="monthlyCost">Monthly Service Cost ($)</label>
+                    <input type="number" id="monthlyCost" value="1500" min="0" step="100" placeholder="1500">
+                </div>
+
+                <div class="input-group">
+                    <label for="timeframe">Calculate ROI For</label>
+                    <select id="timeframe">
+                        <option value="1">Month 1</option>
+                        <option value="3">3 Months</option>
+                        <option value="6">6 Months</option>
+                        <option value="12" selected>1 Year</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="result-label">Additional Monthly Revenue</div>
+                    <div class="result-value">$<span id="additionalRevenue">0</span></div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Additional Customers/Month</div>
+                    <div class="result-value"><span id="additionalCustomers">0</span></div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Total Cost (Period)</div>
+                    <div class="result-value">$<span id="totalCost">0</span></div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Net Profit (Period)</div>
+                    <div class="result-value">$<span id="netProfit">0</span></div>
+                </div>
+            </div>
+
+            <div class="comparison-section">
+                <h2 class="comparison-title">Before vs After Comparison</h2>
+                <div class="comparison-grid">
+                    <div class="comparison-column before">
+                        <h3>❌ Current State</h3>
+                        <div class="comparison-stat">
+                            <div class="comparison-stat-label">Customers per Month</div>
+                            <div class="comparison-stat-value"><span id="currentCustomers">0</span></div>
+                        </div>
+                        <div class="comparison-stat">
+                            <div class="comparison-stat-label">Monthly Revenue</div>
+                            <div class="comparison-stat-value">$<span id="currentRevenue">0</span></div>
+                        </div>
+                        <div class="comparison-stat">
+                            <div class="comparison-stat-label">Annual Revenue</div>
+                            <div class="comparison-stat-value">$<span id="currentAnnual">0</span></div>
+                        </div>
+                    </div>
+                    <div class="comparison-column after">
+                        <h3>✅ With BKFlow</h3>
+                        <div class="comparison-stat">
+                            <div class="comparison-stat-label">Customers per Month</div>
+                            <div class="comparison-stat-value"><span id="newCustomers">0</span></div>
+                        </div>
+                        <div class="comparison-stat">
+                            <div class="comparison-stat-label">Monthly Revenue</div>
+                            <div class="comparison-stat-value">$<span id="newRevenue">0</span></div>
+                        </div>
+                        <div class="comparison-stat">
+                            <div class="comparison-stat-label">Annual Revenue</div>
+                            <div class="comparison-stat-value">$<span id="newAnnual">0</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="roi-highlight pulse">
+                <div class="roi-highlight-label">Return on Investment</div>
+                <div class="roi-highlight-value"><span id="roiMultiple">0</span>×</div>
+                <div class="roi-highlight-description">For every $1 invested, you get back $<span id="roiDollars">0</span></div>
+            </div>
+
+            <div class="cta-section">
+                <p class="cta-text">Ready to capture the revenue you're missing?</p>
+                <button class="cta-button" onclick="alert('This is where you close the deal! 💰')">Let's Build Your System</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get all input elements
+        const inputs = {
+            monthlyLeads: document.getElementById('monthlyLeads'),
+            missedLeadRate: document.getElementById('missedLeadRate'),
+            currentConversion: document.getElementById('currentConversion'),
+            avgCustomerValue: document.getElementById('avgCustomerValue'),
+            newCapture: document.getElementById('newCapture'),
+            newConversion: document.getElementById('newConversion'),
+            setupCost: document.getElementById('setupCost'),
+            monthlyCost: document.getElementById('monthlyCost'),
+            timeframe: document.getElementById('timeframe')
+        };
+
+        // Sync sliders with inputs
+        const conversionSlider = document.getElementById('conversionSlider');
+        const missedSlider = document.getElementById('missedSlider');
+        const newCaptureSlider = document.getElementById('newCaptureSlider');
+        const newConversionSlider = document.getElementById('newConversionSlider');
+
+        conversionSlider.addEventListener('input', (e) => {
+            inputs.currentConversion.value = e.target.value;
+            calculate();
+        });
+
+        inputs.currentConversion.addEventListener('input', (e) => {
+            conversionSlider.value = e.target.value;
+            calculate();
+        });
+
+        missedSlider.addEventListener('input', (e) => {
+            inputs.missedLeadRate.value = e.target.value;
+            calculate();
+        });
+
+        inputs.missedLeadRate.addEventListener('input', (e) => {
+            missedSlider.value = e.target.value;
+            calculate();
+        });
+
+        newCaptureSlider.addEventListener('input', (e) => {
+            inputs.newCapture.value = e.target.value;
+            calculate();
+        });
+
+        inputs.newCapture.addEventListener('input', (e) => {
+            newCaptureSlider.value = e.target.value;
+            calculate();
+        });
+
+        newConversionSlider.addEventListener('input', (e) => {
+            inputs.newConversion.value = e.target.value;
+            calculate();
+        });
+
+        inputs.newConversion.addEventListener('input', (e) => {
+            newConversionSlider.value = e.target.value;
+            calculate();
+        });
+
+        // Add event listeners to all inputs
+        Object.values(inputs).forEach(input => {
+            input.addEventListener('input', calculate);
+        });
+
+        function calculate() {
+            // Get values
+            const monthlyLeads = parseFloat(inputs.monthlyLeads.value) || 0;
+            const missedLeadRate = parseFloat(inputs.missedLeadRate.value) / 100 || 0;
+            const currentConversion = parseFloat(inputs.currentConversion.value) / 100 || 0;
+            const avgCustomerValue = parseFloat(inputs.avgCustomerValue.value) || 0;
+            const newCapture = parseFloat(inputs.newCapture.value) / 100 || 0;
+            const newConversion = parseFloat(inputs.newConversion.value) / 100 || 0;
+            const setupCost = parseFloat(inputs.setupCost.value) || 0;
+            const monthlyCost = parseFloat(inputs.monthlyCost.value) || 0;
+            const timeframe = parseInt(inputs.timeframe.value) || 1;
+
+            // CURRENT STATE CALCULATION
+            // Step 1: How many leads actually get followed up with?
+            const currentCaptureRate = 1 - missedLeadRate; // If 50% missed, then 50% captured
+            const leadsContacted = monthlyLeads * currentCaptureRate;
+            
+            // Step 2: Of those contacted, how many close?
+            const currentCustomersPerMonth = leadsContacted * currentConversion;
+            const currentMonthlyRevenue = currentCustomersPerMonth * avgCustomerValue;
+
+            // WITH BKFLOW CALCULATION
+            // Step 1: How many leads get followed up with BKFlow system?
+            const newLeadsContacted = monthlyLeads * newCapture;
+            
+            // Step 2: Of those contacted, how many close?
+            const newCustomersPerMonth = newLeadsContacted * newConversion;
+            const newMonthlyRevenue = newCustomersPerMonth * avgCustomerValue;
+
+            // Calculate gains
+            const additionalCustomersPerMonth = newCustomersPerMonth - currentCustomersPerMonth;
+            const additionalMonthlyRevenue = newMonthlyRevenue - currentMonthlyRevenue;
+
+            // Calculate costs and ROI
+            const totalCost = setupCost + (monthlyCost * timeframe);
+            const totalAdditionalRevenue = additionalMonthlyRevenue * timeframe;
+            const netProfit = totalAdditionalRevenue - totalCost;
+            const roi = totalCost > 0 ? totalAdditionalRevenue / totalCost : 0;
+
+            // Update UI
+            document.getElementById('additionalRevenue').textContent = formatNumber(additionalMonthlyRevenue);
+            document.getElementById('additionalCustomers').textContent = additionalCustomersPerMonth.toFixed(1);
+            document.getElementById('totalCost').textContent = formatNumber(totalCost);
+            document.getElementById('netProfit').textContent = formatNumber(netProfit);
+
+            document.getElementById('currentCustomers').textContent = currentCustomersPerMonth.toFixed(1);
+            document.getElementById('currentRevenue').textContent = formatNumber(currentMonthlyRevenue);
+            document.getElementById('currentAnnual').textContent = formatNumber(currentMonthlyRevenue * 12);
+
+            document.getElementById('newCustomers').textContent = newCustomersPerMonth.toFixed(1);
+            document.getElementById('newRevenue').textContent = formatNumber(newMonthlyRevenue);
+            document.getElementById('newAnnual').textContent = formatNumber(newMonthlyRevenue * 12);
+
+            document.getElementById('roiMultiple').textContent = roi.toFixed(1);
+            document.getElementById('roiDollars').textContent = roi.toFixed(2);
+        }
+
+        function formatNumber(num) {
+            return Math.round(num).toLocaleString('en-US');
+        }
+
+        // Initial calculation
+        calculate();
+    </script>
+</body>
+</html>
